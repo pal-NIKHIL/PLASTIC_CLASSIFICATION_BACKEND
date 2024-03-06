@@ -50,11 +50,18 @@ app.get("/getdailyData", async (req, res) => {
 });
 app.post("/adddailyData", async (req, res) => {
   try {
-    const { date, collection } = await req.body;
+    const { date, HDPE, LDPE, PET, PP, PS, PVC, Others } = req.body;
     const newData = new DailyRecord({
       date,
-      collection,
+      HDPE,
+      LDPE,
+      PET,
+      PP,
+      PS,
+      PVC,
+      Others,
     });
+
     await newData.save();
     res.status(201).json("success");
   } catch (error) {
