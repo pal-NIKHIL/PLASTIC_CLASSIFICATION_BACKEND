@@ -72,15 +72,45 @@ app.post("/adddailyData", async (req, res) => {
 app.post("/getalldata", async (req, res) => {
   const { startdate, enddate } = req.body;
   try {
-    const records = await DailyRecord.find({
-      date: { $gte: startdate, $lte: enddate },
-    });
+    const records = await DailyRecord.aggregate([
+      {
+        $match: {
+          date: { $gte: new Date(startdate), $lte: new Date(enddate) },
+        },
+      },
+      {
+        $group: {
+          _id: "$date",
+          HDPE: { $sum: "$HDPE" },
+          LDPE: { $sum: "$LDPE" },
+          PET: { $sum: "$PET" },
+          PP: { $sum: "$PP" },
+          PS: { $sum: "$PS" },
+          PVC: { $sum: "$PVC" },
+          Others: { $sum: "$Others" },
+        },
+      },
+      {
+        $project: {
+          date: "$_id",
+          _id: 0,
+          HDPE: 1,
+          LDPE: 1,
+          PET: 1,
+          PP: 1,
+          PS: 1,
+          PVC: 1,
+          Others: 1,
+        },
+      },
+    ]);
 
     res.status(200).json({ records });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 });
+
 app.listen(3000, () => {
   console.log("Server running on port 3000");
 });
