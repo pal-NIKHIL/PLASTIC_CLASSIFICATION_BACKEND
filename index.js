@@ -69,7 +69,7 @@ app.post("/adddailyData", async (req, res) => {
     res.status(400).json({ message: error.message });
   }
 });
-app.post("/getalldata", async (req, res) => {
+app.post("/getdataforcharts", async (req, res) => {
   const { startdate, enddate } = req.body;
   try {
     const records = await DailyRecord.aggregate([
@@ -106,6 +106,40 @@ app.post("/getalldata", async (req, res) => {
     ]);
 
     res.status(200).json({ records });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
+app.post("/getdatafortotal", async (req, res) => {
+  const { startdate, enddate } = req.body;
+  try {
+    const records = await DailyRecord.aggregate([
+      {
+        $match: {
+          date: { $gte: new Date(startdate), $lte: new Date(enddate) },
+        },
+      },
+      {
+        $group: {
+          _id: null,
+          HDPE: { $sum: "$HDPE" },
+          LDPE: { $sum: "$LDPE" },
+          PET: { $sum: "$PET" },
+          PP: { $sum: "$PP" },
+          PS: { $sum: "$PS" },
+          PVC: { $sum: "$PVC" },
+          Others: { $sum: "$Others" },
+        },
+      },
+      {
+        $project: {
+          _id: 0,
+        },
+      },
+    ]);
+
+    res.status(200).json(records[0]);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
