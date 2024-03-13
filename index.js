@@ -69,26 +69,16 @@ app.post("/adddailyData", async (req, res) => {
     res.status(400).json({ message: error.message });
   }
 });
-app.post("/updatetotaldata", async (req, res) => {
-  const { HDPE, LDPE, PET, PP, PS, PVC } = req.body;
+app.post("/getalldata", async (req, res) => {
+  const { startdate, enddate } = req.body;
   try {
-    let existingData = await TotalPlasticData.findOne();
-    if (!existingData) {
-      existingData = new TotalPlasticData();
-    }
-    existingData.HDPE += HDPE;
-    existingData.LDPE += LDPE;
-    existingData.PET += PET;
-    existingData.PP += PP;
-    existingData.PS += PS;
-    existingData.PVC += PVC;
-    await existingData.save();
-    res
-      .status(200)
-      .json({ message: "Total plastic data updated successfully" });
+    const records = await DailyRecord.find({
+      date: { $gte: startdate, $lte: enddate },
+    });
+
+    res.status(200).json({ records });
   } catch (error) {
-    console.error("Error updating total plastic data:", error);
-    res.status(500).json({ error: "Internal server error" });
+    res.status(500).json({ message: error.message });
   }
 });
 app.listen(3000, () => {
