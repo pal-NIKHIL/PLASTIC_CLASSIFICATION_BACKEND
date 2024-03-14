@@ -91,6 +91,9 @@ app.post("/getdataforcharts", async (req, res) => {
         },
       },
       {
+        $sort: { _id: 1 },
+      },
+      {
         $project: {
           date: "$_id",
           _id: 0,
