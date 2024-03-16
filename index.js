@@ -70,7 +70,13 @@ app.post("/adddailyData", async (req, res) => {
   }
 });
 app.post("/getdataforcharts", async (req, res) => {
-  const { startdate, enddate } = req.body;
+  let { startdate, enddate } = req.body;
+  startdate = new Date(startdate);
+  enddate = new Date(enddate);
+  startdate.setHours(startdate.getHours() + 5);
+  startdate.setMinutes(startdate.getMinutes() + 30);
+  enddate.setHours(enddate.getHours() + 5);
+  enddate.setMinutes(enddate.getMinutes() + 30);
   try {
     const records = await DailyRecord.aggregate([
       {
@@ -115,7 +121,13 @@ app.post("/getdataforcharts", async (req, res) => {
 });
 
 app.post("/getdatafortotal", async (req, res) => {
-  const { startdate, enddate } = req.body;
+  let { startdate, enddate } = req.body;
+  startdate = new Date(startdate);
+  enddate = new Date(enddate);
+  startdate.setHours(startdate.getHours() + 5);
+  startdate.setMinutes(startdate.getMinutes() + 30);
+  enddate.setHours(enddate.getHours() + 5);
+  enddate.setMinutes(enddate.getMinutes() + 30);
   try {
     const records = await DailyRecord.aggregate([
       {
